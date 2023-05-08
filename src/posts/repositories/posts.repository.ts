@@ -91,6 +91,13 @@ export class PostRepository {
   return this.prisma.post.update({
       where: { id },
       data,
+      include: {
+        author: {
+          select: {
+            name: true,
+          }
+        }
+      }
     });
 }
 
