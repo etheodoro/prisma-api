@@ -3,6 +3,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { CreateUserDto } from "../dto/create-user.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
 import { UserEntity } from "../entities/user.entity";
+import { NotFoundError } from "src/common/errors/types/NotFoundError";
 
 @Injectable()
 export class UserRepository {
@@ -53,7 +54,19 @@ export class UserRepository {
   }
 
  async update(id: number, updateUserDto: UpdateUserDto): Promise<UserEntity> {
-    return this.prisma.user.update({
+
+  const user = await this.prisma.user.findUnique({
+    where: {
+      id,
+    }
+  });
+
+  if (!user) {
+    throw new NotFoundError("User no found.");
+  }
+
+
+  return this.prisma.user.update({
       where: {
         id,
       },
